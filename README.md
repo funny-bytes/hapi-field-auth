@@ -1,10 +1,10 @@
 # hapi-field-auth
 
-Hapi plug-in for field-level authorization.
+Hapi plugin for field-level authorization.
 
 [![build status](https://img.shields.io/travis/frankthelen/hapi-field-auth.svg)](http://travis-ci.org/frankthelen/hapi-field-auth)
 [![Coverage Status](https://coveralls.io/repos/github/frankthelen/hapi-field-auth/badge.svg?branch=master)](https://coveralls.io/github/frankthelen/hapi-field-auth?branch=master)
-[![dependencies Status](https://david-dm.org/frankthelen/hapi-field-auth.svg)](https://david-dm.org/frankthelen/hapi-field-auth)
+[![Dependencies Status](https://david-dm.org/frankthelen/hapi-field-auth.svg)](https://david-dm.org/frankthelen/hapi-field-auth)
 [![Greenkeeper badge](https://badges.greenkeeper.io/frankthelen/hapi-field-auth.svg)](https://greenkeeper.io/)
 [![Maintainability](https://api.codeclimate.com/v1/badges/9a28b9cc8e829ae17a80/maintainability)](https://codeclimate.com/github/frankthelen/hapi-field-auth/maintainability)
 [![node](https://img.shields.io/node/v/hapi-field-auth.svg)]()
@@ -19,19 +19,19 @@ npm install hapi-field-auth
 
 ## Purpose
 
-This plug-in adds field-level authorization to Hapi routes.
-
-It makes sense particularly for *PATCH* routes
-if the request payload contains fields that have special constraints
+This plugin provides field-level authorization (not authentication)
+for Hapi routes -- particularly useful for *PATCH* routes.
+The request payload can have fields with special constraints
 in respect to `scope` or `role` of the authenticated user.
 
-A prerequisite for this plug-in is authentication -- use any authentication plug-in, e.g., `hapi-auth-basic`.
-Authentication typically adds `request.route.auth.credentials` with properties `scope` or `role` to the route object.
+A prerequisite is authentication -- use any authentication plugin, e.g., `hapi-auth-basic`.
+It is expected that the authentication sets
+`request.route.auth.credentials.scope` and/or `request.route.auth.credentials.role`
+to the request object.
 
 ## Usage
 
 Register the plugin with Hapi server like this:
-
 ```js
 const Hapi = require('hapi');
 const hapiAuthBasic = require('hapi-auth-basic');
@@ -42,9 +42,8 @@ const server = new Hapi.Server({
 });
 
 const provision = async () => {
-  await server.register({
-    plugin: hapiFieldAuth,
-  });
+  await server.register([hapiAuthBasic, hapiFieldAuth]);
+  // ...
   await server.start();
 };
 
@@ -52,7 +51,6 @@ provision();
 ```
 
 Your route configuration may look like this:
-
 ```js
 server.route({
   method: 'PATCH',
@@ -60,7 +58,7 @@ server.route({
   options: {
     auth: {
       access: {
-        scope: ['write', 'write.extended'],
+        scope: ['write', 'write.extended'], // allow both scopes
       },
     },
     validate: {
@@ -68,8 +66,8 @@ server.route({
     },
     plugins: {
       'hapi-field-auth': [{ // field-level authorization -> HTTP 403
-        fields: ['myProtectedField'],
-        scope: ['write.extended'],
+        fields: ['myProtectedField'], // request payload properties
+        scope: ['write.extended'], // restrict to scope
       }],
     },
   },
