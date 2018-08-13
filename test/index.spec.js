@@ -21,6 +21,7 @@ const validate = async (request, username) => {
       credentials: {
         username,
         scope: ['write', 'write.extended'],
+        role: ['admin'],
       },
     };
   }
@@ -30,6 +31,7 @@ const validate = async (request, username) => {
       credentials: {
         username,
         scope: ['write'],
+        role: ['writer'],
       },
     };
   }
@@ -38,9 +40,18 @@ const validate = async (request, username) => {
   };
 };
 
-async function setup() {
+const listener = {
+  errors: (request, event, tags) => { // eslint-disable-line no-unused-vars
+    // console.log('####', event);
+  },
+};
+
+const setup = async () => {
   const server = new Hapi.Server({
-    port: 9001,
+    port: 9004,
+    // debug: {
+    //   request: ['error'],
+    // },
   });
   const route1 = {
     method: 'GET',
@@ -68,26 +79,47 @@ async function setup() {
     },
     handler: () => 'ok',
   };
+  const route3 = {
+    method: 'PATCH',
+    path: '/test/role',
+    options: {
+      auth: {
+        access: {
+          scope: ['write', 'write.extended'],
+        },
+      },
+      plugins: {
+        'hapi-field-auth': [{
+          fields: ['protected'],
+          role: ['admin'],
+        }],
+      },
+    },
+    handler: () => 'ok',
+  };
   await server.register([hapiAuthBasic, hapiFieldAuth]);
   server.auth.strategy('simple', 'basic', { validate });
   server.auth.default('simple');
-  await server.route([route1, route2]);
+  await server.route([route1, route2, route3]);
   await server.start();
   return server;
-}
+};
 
 describe('hapi-field-auth / no options', async () => {
   let server;
 
   beforeEach(async () => {
     server = await setup();
+    sinon.spy(listener, 'errors');
+    server.events.on({ name: 'request', filter: { tags: ['error'] } }, listener.errors);
   });
 
   afterEach(async () => {
+    listener.errors.restore();
     await server.stop();
   });
 
-  it('should not interfer unprotected routes', async () => {
+  it('should not affect unprotected routes', async () => {
     const res = await server.inject({
       method: 'GET',
       url: '/test',
@@ -95,7 +127,7 @@ describe('hapi-field-auth / no options', async () => {
     expect(res.statusCode).to.be.equal(200);
   });
 
-  it('should not interfer protected routes', async () => {
+  it('should not affect protected routes', async () => {
     const res = await server.inject({
       method: 'PATCH',
       url: '/test',
@@ -103,7 +135,19 @@ describe('hapi-field-auth / no options', async () => {
     expect(res.statusCode).to.be.equal(401);
   });
 
-  it('should allow fields without special scope', async () => {
+  it('should issue error if protected route is not authenticated', async () => {
+    const res = await server.inject({
+      method: 'PATCH',
+      url: '/test',
+    });
+    expect(res.statusCode).to.be.equal(401);
+    expect(listener.errors.calledOnce).to.be.equals(true);
+    const { tags, data } = listener.errors.getCall(0).args[1]; // event
+    expect(tags).to.be.deep.equal(['error']);
+    expect(data).to.be.equal('plugin hapi-field-auth: not authenticated');
+  });
+
+  it('should allow fields if no special scope', async () => {
     const res = await server.inject({
       method: 'PATCH',
       url: '/test',
@@ -117,7 +161,7 @@ describe('hapi-field-auth / no options', async () => {
     expect(res.statusCode).to.be.equal(200);
   });
 
-  it('should protect fields with special scope / scope NOT sufficient', async () => {
+  it('should protect fields if special scope / scope not sufficient', async () => {
     const res = await server.inject({
       method: 'PATCH',
       url: '/test',
@@ -132,10 +176,55 @@ describe('hapi-field-auth / no options', async () => {
     expect(res.statusCode).to.be.equal(403);
   });
 
-  it('should protect fields with special scope / scope NOT sufficient', async () => {
+  it('should protect fields if special scope / scope sufficient', async () => {
     const res = await server.inject({
       method: 'PATCH',
       url: '/test',
+      headers: {
+        authorization: 'Basic YWRtaW46dGVzdA==', // admin:test
+      },
+      payload: {
+        bla: true,
+        protected: true,
+      },
+    });
+    expect(res.statusCode).to.be.equal(200);
+  });
+
+  it('should issue error if protected route has empty payload', async () => {
+    const res = await server.inject({
+      method: 'PATCH',
+      url: '/test',
+      headers: {
+        authorization: 'Basic YWRtaW46dGVzdA==', // admin:test
+      },
+    });
+    expect(res.statusCode).to.be.equal(200);
+    expect(listener.errors.calledOnce).to.be.equals(true);
+    const { tags, data } = listener.errors.getCall(0).args[1]; // event
+    expect(tags).to.be.deep.equal(['error']);
+    expect(data).to.be.equal('plugin hapi-field-auth: payload is empty');
+  });
+
+  it('should protect fields if special scope / scope not sufficient / role', async () => {
+    const res = await server.inject({
+      method: 'PATCH',
+      url: '/test/role',
+      headers: {
+        authorization: 'Basic d3JpdGVyOnRlc3Q=', // writer:test
+      },
+      payload: {
+        bla: true,
+        protected: true,
+      },
+    });
+    expect(res.statusCode).to.be.equal(403);
+  });
+
+  it('should protect fields if special scope / scope sufficient / role', async () => {
+    const res = await server.inject({
+      method: 'PATCH',
+      url: '/test/role',
       headers: {
         authorization: 'Basic YWRtaW46dGVzdA==', // admin:test
       },
