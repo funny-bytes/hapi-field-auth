@@ -26,17 +26,13 @@ const register = (server) => {
       return h.continue;
     }
     const authScope = split(credentials.scope);
-    const authRole = split(credentials.role);
     const keys = Object.keys(payload);
-    settings.forEach(({ fields, scope, role }) => {
+    settings.forEach(({ fields, scope }) => {
       if (_.intersection(keys, fields).length) {
         const requiredScope = split(scope);
+        // TODO: replace request parameters in scope, e.g., `{params.id}`
         if (requiredScope.length && _.intersection(requiredScope, authScope).length === 0) {
           throw Boom.forbidden(`fields [${fields}] missing authorization scope [${requiredScope}]`);
-        }
-        const requiredRole = split(role);
-        if (requiredRole.length && _.intersection(requiredRole, authRole).length === 0) {
-          throw Boom.forbidden(`fields [${fields}] missing authorization role [${requiredRole}]`);
         }
       }
     });
