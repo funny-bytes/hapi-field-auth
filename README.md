@@ -60,8 +60,8 @@ server.route({
   path: '/example',
   options: {
     auth: {
-      access: {
-        scope: ['write', 'write.extended'], // allow both scopes
+      access: { // route-level authorization -> HTTP 403
+        scope: ['write', 'write.extended'], // multiple scopes on route-level
       },
     },
     validate: {
@@ -70,7 +70,7 @@ server.route({
     plugins: {
       'hapi-field-auth': [{ // field-level authorization -> HTTP 403
         fields: ['myProtectedField'], // request payload properties
-        scope: ['write.extended'], // restrict to scope
+        scope: ['write.extended'], // restricted scopes on field-level
       }],
     },
   },
