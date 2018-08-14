@@ -33,6 +33,15 @@ const validate = async (request, username) => {
       },
     };
   }
+  if (username === 'owner') {
+    return {
+      isValid: true,
+      credentials: {
+        username,
+        scope: ['owner.4711'],
+      },
+    };
+  }
   return {
     isValid: false,
   };
@@ -53,7 +62,7 @@ const setup = async () => {
   });
   const route1 = {
     method: 'GET',
-    path: '/test',
+    path: '/test/{id}',
     options: {
       auth: false,
     },
@@ -61,17 +70,17 @@ const setup = async () => {
   };
   const route2 = {
     method: 'PATCH',
-    path: '/test',
+    path: '/test/{id}',
     options: {
       auth: {
         access: {
-          scope: ['write', 'write.extended'],
+          scope: ['write', 'write.extended', 'owner.{params.id}'],
         },
       },
       plugins: {
         'hapi-field-auth': [{
           fields: ['protected'],
-          scope: ['write.extended'],
+          scope: ['write.extended', 'owner.{params.id}'],
         }],
       },
     },
@@ -102,7 +111,7 @@ describe('hapi-field-auth / no options', async () => {
   it('should not affect unprotected routes', async () => {
     const res = await server.inject({
       method: 'GET',
-      url: '/test',
+      url: '/test/4711',
     });
     expect(res.statusCode).to.be.equal(200);
   });
@@ -110,7 +119,7 @@ describe('hapi-field-auth / no options', async () => {
   it('should not affect protected routes', async () => {
     const res = await server.inject({
       method: 'PATCH',
-      url: '/test',
+      url: '/test/4711',
     });
     expect(res.statusCode).to.be.equal(401);
   });
@@ -118,7 +127,7 @@ describe('hapi-field-auth / no options', async () => {
   it('should issue error if protected route is not authenticated', async () => {
     const res = await server.inject({
       method: 'PATCH',
-      url: '/test',
+      url: '/test/4711',
     });
     expect(res.statusCode).to.be.equal(401);
     expect(listener.errors.calledOnce).to.be.equals(true);
@@ -130,7 +139,7 @@ describe('hapi-field-auth / no options', async () => {
   it('should allow fields if no special scope', async () => {
     const res = await server.inject({
       method: 'PATCH',
-      url: '/test',
+      url: '/test/4711',
       headers: {
         authorization: 'Basic d3JpdGVyOnRlc3Q=', // writer:test
       },
@@ -141,10 +150,10 @@ describe('hapi-field-auth / no options', async () => {
     expect(res.statusCode).to.be.equal(200);
   });
 
-  it('should protect fields if special scope / scope not sufficient', async () => {
+  it('should protect fields if field-level scope / scope not sufficient', async () => {
     const res = await server.inject({
       method: 'PATCH',
-      url: '/test',
+      url: '/test/4711',
       headers: {
         authorization: 'Basic d3JpdGVyOnRlc3Q=', // writer:test
       },
@@ -156,10 +165,10 @@ describe('hapi-field-auth / no options', async () => {
     expect(res.statusCode).to.be.equal(403);
   });
 
-  it('should protect fields if special scope / scope sufficient', async () => {
+  it('should protect fields if field-level scope / scope sufficient', async () => {
     const res = await server.inject({
       method: 'PATCH',
-      url: '/test',
+      url: '/test/4711',
       headers: {
         authorization: 'Basic YWRtaW46dGVzdA==', // admin:test
       },
@@ -174,7 +183,7 @@ describe('hapi-field-auth / no options', async () => {
   it('should issue error if protected route has empty payload', async () => {
     const res = await server.inject({
       method: 'PATCH',
-      url: '/test',
+      url: '/test/4711',
       headers: {
         authorization: 'Basic YWRtaW46dGVzdA==', // admin:test
       },
@@ -184,5 +193,35 @@ describe('hapi-field-auth / no options', async () => {
     const { tags, data } = listener.errors.getCall(0).args[1]; // event
     expect(tags).to.be.deep.equal(['error']);
     expect(data).to.be.equal('plugin hapi-field-auth: payload is empty');
+  });
+
+  it('should protect fields if field-level scope with params / scope not sufficient', async () => {
+    const res = await server.inject({
+      method: 'PATCH',
+      url: '/test/4712',
+      headers: {
+        authorization: 'Basic b3duZXI6dGVzdA==', // owner:test
+      },
+      payload: {
+        bla: true,
+        protected: true,
+      },
+    });
+    expect(res.statusCode).to.be.equal(403);
+  });
+
+  it('should protect fields if field-level scope with params / scope sufficient', async () => {
+    const res = await server.inject({
+      method: 'PATCH',
+      url: '/test/4711',
+      headers: {
+        authorization: 'Basic b3duZXI6dGVzdA==', // owner:test
+      },
+      payload: {
+        bla: true,
+        protected: true,
+      },
+    });
+    expect(res.statusCode).to.be.equal(200);
   });
 });

@@ -26,8 +26,11 @@ in respect to the `scope` of the authenticated user,
 this plugin allows to restrict access on field-level.
 
 A prerequisite is authentication -- use any authentication plugin, e.g., `hapi-auth-basic`.
-It is expected that the authentication sets `request.route.auth.credentials.scope`
+It is expected that authentication sets `request.route.auth.credentials.scope`
 to the request object.
+
+Dynamic scopes referring to the request object (query, params, payload, and credentials)
+are supported, e.g., `user-{params.id}`. Prefix characters `!` and `+` are not (yet) supported.
 
 ## Usage
 

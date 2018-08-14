@@ -1,5 +1,5 @@
-const _ = require('lodash');
 const Boom = require('boom');
+const Mustache = require('mustache');
 
 const name = 'hapi-field-auth';
 
@@ -9,9 +9,16 @@ const split = (arg) => {
   return arg;
 };
 
+const intersection = (arr1, arr2) => arr1.reduce((acc, x) => acc || arr2.includes(x), false);
+
+const resolve = (tpl, context) => Mustache
+  .render(tpl.replace(/\{/, '{{{').replace(/\}/, '}}}'), context);
+
 const register = (server) => {
   server.ext('onPreResponse', (request, h) => {
-    const { payload, route, auth } = request;
+    const {
+      payload, route, auth, params, query,
+    } = request;
     const settings = route.settings.plugins[name];
     if (!settings) { // nothing to do
       return h.continue;
@@ -26,12 +33,13 @@ const register = (server) => {
       return h.continue;
     }
     const authScope = split(credentials.scope);
-    const keys = Object.keys(payload);
+    const targetProps = Object.keys(payload);
     settings.forEach(({ fields, scope }) => {
-      if (_.intersection(keys, fields).length) {
-        const requiredScope = split(scope);
-        // TODO: replace request parameters in scope, e.g., `{params.id}`
-        if (requiredScope.length && _.intersection(requiredScope, authScope).length === 0) {
+      if (intersection(targetProps, fields)) {
+        const requiredScope = split(scope).map(s => resolve(s, {
+          params, query, payload, credentials,
+        }));
+        if (requiredScope.length && !intersection(requiredScope, authScope)) {
           throw Boom.forbidden(`fields [${fields}] missing authorization scope [${requiredScope}]`);
         }
       }
