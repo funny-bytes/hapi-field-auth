@@ -9,7 +9,11 @@ const split = (arg) => {
   return arg;
 };
 
-const intersection = (arr1, arr2) => arr1.reduce((acc, x) => acc || arr2.includes(x), false);
+const intersection = (arr1, arr2) => arr1
+  .reduce((acc, x) => (arr2.includes(x) ? [...acc, x] : acc), []);
+
+const hasIntersection = (arr1, arr2) => arr1
+  .reduce((acc, x) => acc || arr2.includes(x), false);
 
 const resolve = (tpl, context) => Mustache
   .render(tpl.replace(/\{/, '{{{').replace(/\}/, '}}}'), context);
@@ -35,12 +39,13 @@ const register = (server) => {
     const authScope = split(credentials.scope);
     const targetProps = Object.keys(payload);
     settings.forEach(({ fields, scope }) => {
-      if (intersection(targetProps, fields)) {
+      const protectedProps = intersection(targetProps, fields);
+      if (protectedProps.length) {
         const requiredScope = split(scope).map(s => resolve(s, {
           params, query, payload, credentials,
         }));
-        if (requiredScope.length && !intersection(requiredScope, authScope)) {
-          throw Boom.forbidden(`fields [${fields}] missing authorization scope [${requiredScope}]`);
+        if (!hasIntersection(requiredScope, authScope)) {
+          throw Boom.forbidden(`fields [${protectedProps}] missing authorization scope [${requiredScope}]`);
         }
       }
     });
