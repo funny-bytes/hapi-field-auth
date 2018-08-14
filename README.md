@@ -60,7 +60,7 @@ server.route({
   path: '/example',
   options: {
     auth: {
-      access: { // route-level authorization -> HTTP 403
+      access: { // route-level auth -> HTTP 401/403
         scope: ['write', 'write.extended'], // multiple scopes on route-level
       },
     },
