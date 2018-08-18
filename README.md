@@ -2,7 +2,7 @@
 
 Hapi plugin for field-level authorization.
 
-[![build status](https://img.shields.io/travis/frankthelen/hapi-field-auth.svg)](http://travis-ci.org/frankthelen/hapi-field-auth)
+[![Build Status](https://travis-ci.org/frankthelen/hapi-field-auth.svg?branch=master)](https://travis-ci.org/frankthelen/hapi-field-auth)
 [![Coverage Status](https://coveralls.io/repos/github/frankthelen/hapi-field-auth/badge.svg?branch=master)](https://coveralls.io/github/frankthelen/hapi-field-auth?branch=master)
 [![Dependencies Status](https://david-dm.org/frankthelen/hapi-field-auth.svg)](https://david-dm.org/frankthelen/hapi-field-auth)
 [![Greenkeeper badge](https://badges.greenkeeper.io/frankthelen/hapi-field-auth.svg)](https://greenkeeper.io/)
