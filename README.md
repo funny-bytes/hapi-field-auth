@@ -20,14 +20,15 @@ npm install hapi-field-auth
 ## Purpose
 
 This plugin provides field-level authorization (not authentication)
-for Hapi routes -- particularly for *PATCH* routes.
+for Hapi routes -- particularly useful for *PATCH* routes.
 If the request payload has fields with special constraints
 in respect to the `scope` of the authenticated user,
 this plugin allows to restrict access on field-level.
 
-A prerequisite is authentication -- use any authentication plugin, e.g., `hapi-auth-basic`.
-It is expected that authentication sets `request.route.auth.credentials.scope`
-to the request object.
+A prerequisite is authentication.
+Use any authentication plugin, e.g., `hapi-auth-basic` or `hapi-auth-bearer-token`.
+The authentication plugin must properly set `request.auth.credentials.scope`
+with the authenticated user's scope for this plugin to work.
 
 Dynamic scopes referring to the request object (query, params, payload, and credentials)
 are supported, e.g., `user-{params.id}`. Prefix characters `!` and `+` are not (yet) supported.
@@ -79,7 +80,3 @@ server.route({
   }
 });
 ```
-
-## Options
-
-This plugin does not have any options.
