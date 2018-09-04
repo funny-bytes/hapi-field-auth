@@ -47,6 +47,7 @@
   },
   "dependencies": {
     "boom": "^7.2.0",
-    "mustache": "^2.3.2"
+    "mustache": "^2.3.2",
+    "joi": "^13.6.0"
   }
 }

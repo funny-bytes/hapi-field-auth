@@ -1,5 +1,6 @@
 const Boom = require('boom');
 const Mustache = require('mustache');
+const Joi = require('joi');
 
 const name = 'hapi-field-auth';
 
@@ -38,13 +39,21 @@ const register = (server) => {
     }
     const authScope = split(credentials.scope);
     const targetProps = Object.keys(payload);
-    settings.forEach(({ fields, scope }) => {
+    settings.forEach(({ fields, scope, validate }) => {
       const protectedProps = intersection(targetProps, fields);
       if (protectedProps.length) {
         const requiredScope = split(scope).map(s => resolve(s, {
           params, query, payload, credentials,
         }));
-        if (!hasIntersection(requiredScope, authScope)) {
+
+        if (validate && !hasIntersection(requiredScope, authScope)) {
+          fields.forEach((field) => {
+            const result = Joi.validate(payload[field], validate);
+            if (result.error) {
+              throw Boom.badRequest(result.error.message.replace('value', field));
+            }
+          });
+        } else if (!hasIntersection(requiredScope, authScope)) {
           throw Boom.forbidden(`fields [${protectedProps}] missing authorization scope [${requiredScope}]`);
         }
       }
