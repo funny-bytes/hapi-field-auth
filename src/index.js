@@ -24,8 +24,8 @@ const register = (server) => {
     const {
       payload, route, auth, params, query,
     } = request;
-    const settings = route.settings.plugins[name];
-    if (!settings) { // nothing to do
+    const rules = route.settings.plugins[name];
+    if (!rules) { // nothing to do
       return h.continue;
     }
     const { isAuthenticated, credentials } = auth || {};
@@ -39,26 +39,27 @@ const register = (server) => {
     }
     const authScope = split(credentials.scope);
     const targetProps = Object.keys(payload);
-    settings.forEach(({ fields, scope, validate }) => {
+    rules.forEach(({ fields, scope, validate }) => {
       const protectedProps = intersection(targetProps, fields);
+      const requiredScope = split(scope).map(s => resolve(s, {
+        params, query, payload, credentials,
+      }));
+      if (protectedProps.length && hasIntersection(requiredScope, authScope)) {
+        return; // sufficient scope -- rule passed
+      }
+      if (validate) {
+        fields.forEach((field) => {
+          const result = Joi.validate(payload[field], validate);
+          if (result.error) {
+            throw Boom.badRequest(result.error.message.replace('value', field));
+          }
+        });
+      }
       if (protectedProps.length) {
-        const requiredScope = split(scope).map(s => resolve(s, {
-          params, query, payload, credentials,
-        }));
-
-        if (validate && !hasIntersection(requiredScope, authScope)) {
-          fields.forEach((field) => {
-            const result = Joi.validate(payload[field], validate);
-            if (result.error) {
-              throw Boom.badRequest(result.error.message.replace('value', field));
-            }
-          });
-        } else if (!hasIntersection(requiredScope, authScope)) {
-          throw Boom.forbidden(`fields [${protectedProps}] missing authorization scope [${requiredScope}]`);
-        }
+        throw Boom.forbidden(`fields [${protectedProps}] missing authorization scope [${requiredScope}]`);
       }
     });
-    return h.continue;
+    return h.continue; // all rules passed
   });
 };
 

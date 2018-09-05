@@ -23,8 +23,8 @@ This plugin provides field-level authorization (not authentication)
 for Hapi routes -- particularly useful for *PATCH* routes.
 If the request payload has fields with special constraints
 in respect to the `scope` of the authenticated user,
-this plugin allows to restrict access on field-level 
-and add field validation depending on the `scope`.
+this plugin allows restricting access on field-level
+and adding field validation depending on the `scope`.
 
 A prerequisite is authentication.
 Use any authentication plugin, e.g., `hapi-auth-basic` or `hapi-auth-bearer-token`.
@@ -70,15 +70,14 @@ server.route({
       payload: ExampleSchema, // Joi schema validation -> HTTP 400
     },
     plugins: {
-      'hapi-field-auth': [{ // field-level authorization -> HTTP 403
+      'hapi-field-auth': [{ // add field-level authorization -> HTTP 403
         fields: ['myProtectedField'], // request payload properties
         scope: ['write.extended'], // restricted scopes on field-level
       }, {
-         // add more restrictive validation unless scope -> http 400
-         fields: ['activeUntil', 'validUntil'],
-         scope: ['config.write.test'], // unless
-         validate: Joi.date().min('now').allow(null),
-       }],
+        fields: ['activeUntil', 'validUntil'],
+        scope: ['write.extended'], // restricted scopes on field-level...
+        validate: Joi.date().min('now').allow(null), // ...OR additional validation -> HTTP 400
+      }],
     },
   },
   handler: function (request, h) {
