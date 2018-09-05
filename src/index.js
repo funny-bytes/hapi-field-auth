@@ -54,6 +54,7 @@ const register = (server) => {
             throw Boom.badRequest(result.error.message.replace('value', field));
           }
         });
+        return; // validation passed -- rule passed
       }
       if (protectedProps.length) {
         throw Boom.forbidden(`fields [${protectedProps}] missing authorization scope [${requiredScope}]`);
