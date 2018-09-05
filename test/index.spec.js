@@ -1,5 +1,6 @@
 const Hapi = require('hapi');
 const hapiAuthBasic = require('hapi-auth-basic');
+const Joi = require('joi');
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const sinon = require('sinon');
@@ -81,6 +82,11 @@ const setup = async () => {
         'hapi-field-auth': [{
           fields: ['protected'],
           scope: ['write.extended', 'owner.{params.id}'],
+        },
+        {
+          fields: ['validatedField'],
+          scope: ['write.extended', 'owner.{params.id}'],
+          validate: Joi.date().min('now').allow(null),
         }],
       },
     },
@@ -164,6 +170,20 @@ describe('hapi-field-auth / no options', async () => {
     });
     expect(res.statusCode).to.be.equal(403);
   });
+  it('should validate fields if field-level scope / validation fails for scope ', async () => {
+    const res = await server.inject({
+      method: 'PATCH',
+      url: '/test/4711',
+      headers: {
+        authorization: 'Basic d3JpdGVyOnRlc3Q=', // writer:test
+      },
+      payload: {
+        bla: true,
+        validatedField: '2000-07-10T12:24:05.421Z',
+      },
+    });
+    expect(res.statusCode).to.be.equal(400);
+  });
 
   it('should protect fields if field-level scope / scope sufficient', async () => {
     const res = await server.inject({
@@ -175,6 +195,21 @@ describe('hapi-field-auth / no options', async () => {
       payload: {
         bla: true,
         protected: true,
+      },
+    });
+    expect(res.statusCode).to.be.equal(200);
+  });
+
+  it('should not validate fields if field-level scope / scope sufficient for no validation ', async () => {
+    const res = await server.inject({
+      method: 'PATCH',
+      url: '/test/4711',
+      headers: {
+        authorization: 'Basic YWRtaW46dGVzdA==', // admin:test
+      },
+      payload: {
+        bla: true,
+        validatedField: '2000-07-10T12:24:05.421Z',
       },
     });
     expect(res.statusCode).to.be.equal(200);
