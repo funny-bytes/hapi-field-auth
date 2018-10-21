@@ -29,25 +29,25 @@
     "hapi": ">=17.x.x"
   },
   "devDependencies": {
-    "babel-eslint": "^9.0.0",
-    "chai": "^4.1.2",
+    "babel-eslint": "^10.0.1",
+    "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "coveralls": "^3.0.2",
-    "eslint": "^5.5.0",
+    "eslint": "^5.7.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.14.0",
-    "eslint-plugin-promise": "^4.0.0",
+    "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-should-promised": "^2.0.0",
-    "hapi": "^17.5.4",
+    "hapi": "^17.6.0",
     "hapi-auth-basic": "^5.0.0",
     "mocha": "^5.2.0",
-    "nyc": "^13.0.1",
-    "sinon": "^6.2.0",
+    "nyc": "^13.1.0",
+    "sinon": "^7.0.0",
     "sinon-chai": "^3.2.0"
   },
   "dependencies": {
     "boom": "^7.2.0",
-    "mustache": "^2.3.2",
-    "joi": "^13.6.0"
+    "joi": "^14.0.0",
+    "mustache": "^3.0.0"
   }
 }
