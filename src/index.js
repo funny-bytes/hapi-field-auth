@@ -20,7 +20,7 @@ const resolve = (tpl, context) => Mustache
   .render(tpl.replace(/\{/, '{{{').replace(/\}/, '}}}'), context);
 
 const register = (server) => {
-  server.ext('onPreResponse', (request, h) => {
+  server.ext('onCredentials', (request, h) => {
     const {
       payload, route, auth, params, query,
     } = request;
