@@ -130,16 +130,13 @@ describe('hapi-field-auth / no options', async () => {
     expect(res.statusCode).to.be.equal(401);
   });
 
-  it('should issue error if protected route is not authenticated', async () => {
+  it('should not run if protected route is not authenticated', async () => {
     const res = await server.inject({
       method: 'PATCH',
       url: '/test/4711',
     });
     expect(res.statusCode).to.be.equal(401);
-    expect(listener.errors.calledOnce).to.be.equals(true);
-    const { tags, data } = listener.errors.getCall(0).args[1]; // event
-    expect(tags).to.be.deep.equal(['error']);
-    expect(data).to.be.equal('plugin hapi-field-auth: not authenticated');
+    expect(listener.errors.calledOnce).to.be.equals(false);
   });
 
   it('should allow fields if no special scope', async () => {
@@ -170,6 +167,7 @@ describe('hapi-field-auth / no options', async () => {
     });
     expect(res.statusCode).to.be.equal(403);
   });
+  
   it('should validate fields if field-level scope / validation fails for scope ', async () => {
     const res = await server.inject({
       method: 'PATCH',
