@@ -52,6 +52,7 @@ const listener = {
   errors: (request, event, tags) => { // eslint-disable-line no-unused-vars
     // console.log('####', event);
   },
+  handlers: () => {},
 };
 
 const setup = async () => {
@@ -67,7 +68,10 @@ const setup = async () => {
     options: {
       auth: false,
     },
-    handler: () => 'ok',
+    handler: () => {
+      listener.handlers();
+      return 'ok';
+    },
   };
   const route2 = {
     method: 'PATCH',
@@ -90,7 +94,10 @@ const setup = async () => {
         }],
       },
     },
-    handler: () => 'ok',
+    handler: () => {
+      listener.handlers();
+      return 'ok';
+    },
   };
   await server.register([hapiAuthBasic, hapiFieldAuth]);
   server.auth.strategy('simple', 'basic', { validate });
@@ -106,11 +113,13 @@ describe('hapi-field-auth / no options', async () => {
   beforeEach(async () => {
     server = await setup();
     sinon.spy(listener, 'errors');
+    sinon.spy(listener, 'handlers');
     server.events.on({ name: 'request', filter: { tags: ['error'] } }, listener.errors);
   });
 
   afterEach(async () => {
     listener.errors.restore();
+    listener.handlers.restore();
     await server.stop();
   });
 
@@ -120,6 +129,7 @@ describe('hapi-field-auth / no options', async () => {
       url: '/test/4711',
     });
     expect(res.statusCode).to.be.equal(200);
+    expect(listener.handlers.calledOnce).to.equal(true);
   });
 
   it('should not affect protected routes', async () => {
@@ -128,6 +138,7 @@ describe('hapi-field-auth / no options', async () => {
       url: '/test/4711',
     });
     expect(res.statusCode).to.be.equal(401);
+    expect(listener.handlers.calledOnce).to.equal(false);
   });
 
   it('should not run if protected route is not authenticated', async () => {
@@ -137,6 +148,7 @@ describe('hapi-field-auth / no options', async () => {
     });
     expect(res.statusCode).to.be.equal(401);
     expect(listener.errors.calledOnce).to.be.equals(false);
+    expect(listener.handlers.calledOnce).to.equal(false);
   });
 
   it('should allow fields if no special scope', async () => {
@@ -151,6 +163,7 @@ describe('hapi-field-auth / no options', async () => {
       },
     });
     expect(res.statusCode).to.be.equal(200);
+    expect(listener.handlers.calledOnce).to.equal(true);
   });
 
   it('should protect fields if field-level scope / scope not sufficient', async () => {
@@ -166,8 +179,9 @@ describe('hapi-field-auth / no options', async () => {
       },
     });
     expect(res.statusCode).to.be.equal(403);
+    expect(listener.handlers.calledOnce).to.equal(false);
   });
-  
+
   it('should validate fields if field-level scope / validation fails for scope ', async () => {
     const res = await server.inject({
       method: 'PATCH',
@@ -181,6 +195,7 @@ describe('hapi-field-auth / no options', async () => {
       },
     });
     expect(res.statusCode).to.be.equal(400);
+    expect(listener.handlers.calledOnce).to.equal(false);
   });
 
   it('should protect fields if field-level scope / scope sufficient', async () => {
@@ -196,6 +211,7 @@ describe('hapi-field-auth / no options', async () => {
       },
     });
     expect(res.statusCode).to.be.equal(200);
+    expect(listener.handlers.calledOnce).to.equal(true);
   });
 
   it('should not validate fields if field-level scope / scope sufficient for no validation ', async () => {
@@ -211,6 +227,7 @@ describe('hapi-field-auth / no options', async () => {
       },
     });
     expect(res.statusCode).to.be.equal(200);
+    expect(listener.handlers.calledOnce).to.equal(true);
   });
 
   it('should issue error if protected route has empty payload', async () => {
@@ -223,6 +240,7 @@ describe('hapi-field-auth / no options', async () => {
     });
     expect(res.statusCode).to.be.equal(200);
     expect(listener.errors.calledOnce).to.be.equals(true);
+    expect(listener.handlers.calledOnce).to.equal(true);
     const { tags, data } = listener.errors.getCall(0).args[1]; // event
     expect(tags).to.be.deep.equal(['error']);
     expect(data).to.be.equal('plugin hapi-field-auth: payload is empty');
@@ -241,6 +259,7 @@ describe('hapi-field-auth / no options', async () => {
       },
     });
     expect(res.statusCode).to.be.equal(403);
+    expect(listener.handlers.calledOnce).to.equal(false);
   });
 
   it('should protect fields if field-level scope with params / scope sufficient', async () => {
@@ -256,5 +275,6 @@ describe('hapi-field-auth / no options', async () => {
       },
     });
     expect(res.statusCode).to.be.equal(200);
+    expect(listener.handlers.calledOnce).to.equal(true);
   });
 });
