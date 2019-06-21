@@ -138,7 +138,7 @@ describe('hapi-field-auth / no options', async () => {
       url: '/test/4711',
     });
     expect(res.statusCode).to.be.equal(401);
-    expect(listener.handlers.calledOnce).to.equal(false);
+    expect(listener.handlers.called).to.equal(false);
   });
 
   it('should not run if protected route is not authenticated', async () => {
@@ -147,8 +147,8 @@ describe('hapi-field-auth / no options', async () => {
       url: '/test/4711',
     });
     expect(res.statusCode).to.be.equal(401);
-    expect(listener.errors.calledOnce).to.be.equals(false);
-    expect(listener.handlers.calledOnce).to.equal(false);
+    expect(listener.errors.called).to.be.equals(false);
+    expect(listener.handlers.called).to.equal(false);
   });
 
   it('should allow fields if no special scope', async () => {
@@ -179,7 +179,7 @@ describe('hapi-field-auth / no options', async () => {
       },
     });
     expect(res.statusCode).to.be.equal(403);
-    expect(listener.handlers.calledOnce).to.equal(false);
+    expect(listener.handlers.called).to.equal(false);
   });
 
   it('should validate fields if field-level scope / validation fails for scope ', async () => {
@@ -195,7 +195,7 @@ describe('hapi-field-auth / no options', async () => {
       },
     });
     expect(res.statusCode).to.be.equal(400);
-    expect(listener.handlers.calledOnce).to.equal(false);
+    expect(listener.handlers.called).to.equal(false);
   });
 
   it('should protect fields if field-level scope / scope sufficient', async () => {
@@ -259,7 +259,7 @@ describe('hapi-field-auth / no options', async () => {
       },
     });
     expect(res.statusCode).to.be.equal(403);
-    expect(listener.handlers.calledOnce).to.equal(false);
+    expect(listener.handlers.called).to.equal(false);
   });
 
   it('should protect fields if field-level scope with params / scope sufficient', async () => {
