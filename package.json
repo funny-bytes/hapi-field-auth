@@ -1,6 +1,6 @@
 {
   "name": "hapi-field-auth",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Hapi plug-in for field-level authorization",
   "main": "src/index.js",
   "author": "Frank Thelen",
