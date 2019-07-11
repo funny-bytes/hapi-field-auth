@@ -38,8 +38,8 @@ are supported, e.g., `user-{params.id}`. Prefix characters `!` and `+` are not (
 
 Register the plugin with Hapi server like this:
 ```js
-const Hapi = require('hapi');
-const hapiAuthBasic = require('hapi-auth-basic');
+const Hapi = require('@hapi/hapi');
+const hapiAuthBasic = require('@hapi/basic');
 const hapiFieldAuth = require('hapi-field-auth');
 
 const server = new Hapi.Server({

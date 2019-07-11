@@ -1,6 +1,6 @@
-const Boom = require('boom');
+const Boom = require('@hapi/boom');
 const Mustache = require('mustache');
-const Joi = require('joi');
+const Joi = require('@hapi/joi');
 
 const name = 'hapi-field-auth';
 
