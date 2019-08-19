@@ -41,7 +41,7 @@ const register = (server) => {
     const targetProps = Object.keys(payload);
     rules.forEach(({ fields, scope, validate }) => {
       const protectedProps = intersection(targetProps, fields);
-      const requiredScope = split(scope).map(s => resolve(s, {
+      const requiredScope = split(scope).map((s) => resolve(s, {
         params, query, payload, credentials,
       }));
       if (protectedProps.length && hasIntersection(requiredScope, authScope)) {
