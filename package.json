@@ -46,7 +46,7 @@
     "sinon-chai": "^3.3.0"
   },
   "dependencies": {
-    "@hapi/boom": "^7.4.3",
+    "@hapi/boom": "^8.0.0",
     "@hapi/joi": "^15.1.1",
     "mustache": "^3.0.1"
   }
