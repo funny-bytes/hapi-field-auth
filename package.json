@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "@hapi/basic": "^5.1.1",
-    "@hapi/hapi": "^18.3.2",
+    "@hapi/hapi": "^19.0.0",
     "babel-eslint": "^10.0.2",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
