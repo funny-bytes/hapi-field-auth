@@ -1,11 +1,10 @@
-const Hapi = require('@hapi/hapi');
 const hapiAuthBasic = require('@hapi/basic');
-const Joi = require('@hapi/joi');
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
-const hapiFieldAuth = require('../src/index');
+const semver = require('semver');
+const hapiFieldAuth = require('..'); // eslint-disable-line import/order
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
@@ -14,6 +13,14 @@ global.chai = chai;
 global.sinon = sinon;
 global.expect = chai.expect;
 global.should = chai.should();
+
+const nodeVersion = process.version;
+const node12 = semver.satisfies(nodeVersion, '>=12.x.x');
+const Hapi = node12 ? require('hapi19') : require('hapi18');
+const Joi = node12 ? require('joi17') : require('joi16');
+
+// eslint-disable-next-line no-console
+console.log(`Testing Node ${nodeVersion}, Hapi ${node12 ? '19' : '18'}, Joi ${node12 ? '17' : '16'}`);
 
 const validate = async (request, username) => {
   if (username === 'admin') {
@@ -179,6 +186,8 @@ describe('hapi-field-auth / no options', async () => {
       },
     });
     expect(res.statusCode).to.be.equal(403);
+    const { message } = JSON.parse(res.payload);
+    expect(message).to.be.equal('fields [protected] missing authorization scope [write.extended,owner.4711]');
     expect(listener.handlers.called).to.equal(false);
   });
 
