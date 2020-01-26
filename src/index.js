@@ -1,6 +1,5 @@
 const Boom = require('@hapi/boom');
 const Mustache = require('mustache');
-const Joi = require('@hapi/joi');
 
 const name = 'hapi-field-auth';
 
@@ -47,9 +46,9 @@ const register = (server) => {
       if (protectedProps.length && hasIntersection(requiredScope, authScope)) {
         return; // sufficient scope -- rule passed
       }
-      if (validate) {
+      if (validate && validate.validate) {
         fields.forEach((field) => {
-          const result = Joi.validate(payload[field], validate);
+          const result = validate.validate(payload[field]);
           if (result.error) {
             throw Boom.badRequest(result.error.message.replace('value', field));
           }

@@ -34,6 +34,10 @@ with the authenticated user's scope for this plugin to work.
 Dynamic scopes referring to the request object (query, params, payload, and credentials)
 are supported, e.g., `user-{params.id}`. Prefix characters `!` and `+` are not (yet) supported.
 
+Tested with
+* Node 12/13, Hapi 19, Joi 17
+* Node 10/8, Hapi 18, Joi 16
+
 ## Usage
 
 Register the plugin with Hapi server like this:
@@ -76,7 +80,7 @@ server.route({
       }, {
         fields: ['activeUntil', 'validUntil'],
         scope: ['write.extended'], // restricted scopes on field-level...
-        validate: Joi.date().min('now').allow(null), // ...OR additional validation -> HTTP 400
+        validate: Joi.date().min('now').allow(null), // ...OR additional Joi schema -> HTTP 400
       }],
     },
   },
