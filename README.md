@@ -11,6 +11,10 @@ Hapi plugin for field-level authorization.
 [![code style](https://img.shields.io/badge/code_style-airbnb-brightgreen.svg)](https://github.com/airbnb/javascript)
 [![License Status](http://img.shields.io/npm/l/hapi-field-auth.svg)]()
 
+Tested with
+* Node 12/13, Hapi 19, Joi 17
+* Node 10, Hapi 18, Joi 16
+
 ## Install
 
 ```bash
@@ -33,10 +37,6 @@ with the authenticated user's scope for this plugin to work.
 
 Dynamic scopes referring to the request object (query, params, payload, and credentials)
 are supported, e.g., `user-{params.id}`. Prefix characters `!` and `+` are not (yet) supported.
-
-Tested with
-* Node 12/13, Hapi 19, Joi 17
-* Node 10/8, Hapi 18, Joi 16
 
 ## Usage
 
