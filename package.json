@@ -7,7 +7,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com/frankthelen/hapi-field-auth"
+    "url": "git://github.com/funny-bytes/hapi-field-auth"
   },
   "keywords": [
     "hapi",
