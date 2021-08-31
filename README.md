@@ -2,10 +2,10 @@
 
 Hapi server plugin for field-level authorization.
 
-[![Build Status](https://travis-ci.org/frankthelen/hapi-field-auth.svg?branch=master)](https://travis-ci.org/frankthelen/hapi-field-auth)
-[![Coverage Status](https://coveralls.io/repos/github/frankthelen/hapi-field-auth/badge.svg?branch=master)](https://coveralls.io/github/frankthelen/hapi-field-auth?branch=master)
-[![Dependencies Status](https://david-dm.org/frankthelen/hapi-field-auth.svg)](https://david-dm.org/frankthelen/hapi-field-auth)
-[![Maintainability](https://api.codeclimate.com/v1/badges/9a28b9cc8e829ae17a80/maintainability)](https://codeclimate.com/github/frankthelen/hapi-field-auth/maintainability)
+![main workflow](https://github.com/funny-bytes/hapi-field-auth/actions/workflows/main.yml/badge.svg)
+[![Coverage Status](https://coveralls.io/repos/github/funny-bytes/hapi-build-auth/badge.svg?branch=master)](https://coveralls.io/github/funny-bytes/hapi-build-auth?branch=master)
+[![Dependencies Status](https://david-dm.org/funny-bytes/hapi-field-auth.svg)](https://david-dm.org/funny-bytes/hapi-field-auth)
+[![Maintainability](https://api.codeclimate.com/v1/badges/9a28b9cc8e829ae17a80/maintainability)](https://codeclimate.com/github/funny-bytes/hapi-field-auth/maintainability)
 [![node](https://img.shields.io/node/v/hapi-field-auth.svg)]()
 [![code style](https://img.shields.io/badge/code_style-airbnb-brightgreen.svg)](https://github.com/airbnb/javascript)
 [![License Status](http://img.shields.io/npm/l/hapi-field-auth.svg)]()
