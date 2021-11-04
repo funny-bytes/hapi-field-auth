@@ -29,6 +29,7 @@
   },
   "devDependencies": {
     "@hapi/basic": "^6.0.0",
+    "ansi-regex": ">=5.0.1",
     "babel-eslint": "^10.0.3",
     "chai": "^4.3.4",
     "chai-as-promised": "^7.1.1",
