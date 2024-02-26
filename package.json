@@ -34,22 +34,22 @@
     "chai": "^4.3.6",
     "chai-as-promised": "^7.1.1",
     "coveralls": "^3.1.1",
-    "eslint": "^8.19.0",
+    "eslint": "^8.57.0",
     "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-promise": "^6.0.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-promise": "^6.1.1",
     "eslint-plugin-should-promised": "^2.0.0",
     "hapi18": "npm:@hapi/hapi@^18.4.0",
     "hapi19": "npm:@hapi/hapi@^19.2.0",
     "hapi20": "npm:@hapi/hapi@^20.0.3",
-    "joi": "^17.6.0",
-    "mocha": "^10.0.0",
+    "joi": "^17.12.2",
+    "mocha": "^10.3.0",
     "nyc": "^15.0.0",
-    "sinon": "^14.0.0",
+    "sinon": "^17.0.1",
     "sinon-chai": "^3.7.0"
   },
   "dependencies": {
-    "@hapi/boom": "^10.0.0",
+    "@hapi/boom": "^10.0.1",
     "mustache": "^4.2.0"
   }
 }
