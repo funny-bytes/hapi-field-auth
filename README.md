@@ -12,7 +12,7 @@ Hapi server plugin for field-level authorization.
 
 Tested with
 
-* Node 18/20/22, Hapi 20/21
+* Node 22, Hapi 20/21
 
 ## Install
 

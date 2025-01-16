@@ -21,7 +21,7 @@
     "preversion": "npm run lint && npm test"
   },
   "engines": {
-    "node": ">=12.x.x"
+    "node": ">=22.x.x"
   },
   "peerDependencies": {
     "@hapi/hapi": ">=17.x.x",
