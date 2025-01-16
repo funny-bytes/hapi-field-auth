@@ -1,9 +1,9 @@
 const Joi = require('joi');
 const hapiAuthBasic = require('@hapi/basic');
 const chai = require('chai');
-const chaiAsPromised = require('chai-as-promised');
+const chaiAsPromised = require('chai-as-promised').default;
 const sinon = require('sinon');
-const sinonChai = require('sinon-chai');
+const sinonChai = require('sinon-chai').default;
 const hapiFieldAuth = require('..'); // eslint-disable-line import/order
 
 chai.use(chaiAsPromised);
@@ -14,7 +14,7 @@ global.sinon = sinon;
 global.expect = chai.expect;
 global.should = chai.should();
 
-const hapiVersions = ['hapi18', 'hapi19', 'hapi20'];
+const hapiVersions = ['hapi20', 'hapi21'];
 
 hapiVersions.forEach((hapiVersion) => {
   // eslint-disable-next-line import/no-dynamic-require, global-require
